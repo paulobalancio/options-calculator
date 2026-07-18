@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OptionCalc
 
-## Getting Started
+A fast, modern options profit calculator. Model long calls and long puts before
+you trade: a live P&L matrix across every price and date until expiration, a
+payoff chart, breakeven, cost, and Greeks — all recalculated as you type.
 
-First, run the development server:
+Pure client-side math on statically generated pages. No backend, no accounts,
+no market-data feeds; every input is manual and nothing you enter leaves the
+browser.
+
+## Stack
+
+- **Next.js 15** (App Router, static generation) + **TypeScript** (strict)
+- **Tailwind CSS v4** with a custom design-token layer (`styles/tokens.css`) —
+  components use only tokens, never default Tailwind colors
+- **Custom SVG** payoff chart (no chart library)
+- **Vitest** for unit tests
+
+## Running locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm test           # engine unit tests
+npm run build      # production build (all routes static)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set `NEXT_PUBLIC_SITE_URL` in the deployment environment so the sitemap,
+canonical URLs, and Open Graph tags emit the real origin.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How the engine is structured
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All financial math lives in `lib/options/`, fully separated from presentation:
 
-## Learn More
+| Module | Responsibility |
+| --- | --- |
+| `black-scholes.ts` | European option pricing and Greeks (delta, gamma, theta, vega) |
+| `types.ts` | Domain types — every strategy is a set of `OptionLeg`s |
+| `position.ts` | Values any set of legs: net cost, theoretical value, P&L now and at expiry |
+| `pnl-matrix.ts` | The price × date P&L grid, with extremes for color scaling |
+| `strategies.ts` | Strategy registry: legs + closed-form summary (max profit/loss, breakevens) |
 
-To learn more about Next.js, take a look at the following resources:
+The UI (`components/calculator/`) consumes the engine through one client
+island, `CalculatorShell`, which parses form input (`lib/calculator-inputs.ts`)
+and derives every output per keystroke.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Every math function is unit-tested against known-good values — including the
+Hull textbook Black-Scholes example and put-call parity — in `lib/**/*.test.ts`.
+No untested financial math ships.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Adding a new strategy
 
-## Deploy on Vercel
+The engine is leg-based, so strategies compose without touching the math:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Add a `StrategyDefinition` to `lib/options/strategies.ts`: an id, a
+   `buildLegs()` that maps user inputs to option legs (two legs for a vertical
+   spread, etc.), and a `summarize()` with closed-form max profit/loss and
+   breakevens. Add tests for the summary math.
+2. Add a route at `app/calculator/<strategy>/page.tsx` — metadata, an
+   explainer, FAQs, and `<CalculatorShell strategyId="…" />`.
+3. Add the route to `app/sitemap.ts` and the header/homepage lists.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`position.ts`, `pnl-matrix.ts`, the matrix table, and the payoff chart already
+handle arbitrary leg arrays.
+
+## Design system
+
+`styles/tokens.css` defines the entire visual language: ink/paper palette with
+one accent blue, profit/loss colors reserved exclusively for P&L data, a
+six-size type scale, 4px spacing grid, one shadow token, and 150ms
+interactive-state transitions. Numbers always render in JetBrains Mono with
+tabular figures so live values never shift in width.
+
+## Disclaimer
+
+Educational estimates only — not investment advice. Values are theoretical
+Black-Scholes estimates assuming constant implied volatility and rates.
