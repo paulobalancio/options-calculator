@@ -20,7 +20,7 @@
      paper, so the grays share one temperature instead of being generic. */
   --color-ink: #191a1e;
   --color-ink-secondary: #50525a; /* secondary text, axis labels */
-  --color-ink-tertiary: #82848d; /* placeholders, captions, units */
+  --color-ink-tertiary: #63656f; /* placeholders, captions, units (AA on all surfaces) */
 
   /* Paper — warm off-white ground; surface is for raised cards/inputs. */
   --color-paper: #faf9f6;

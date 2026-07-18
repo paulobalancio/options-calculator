@@ -80,7 +80,7 @@ export function CalculatorShell({ strategyId }: { strategyId: StrategyId }) {
     <div className="space-y-6">
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
         <InputPanel raw={raw} errors={parsed.errors} onChange={handleChange} />
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <StatCards
             summary={derived.summary}
             targetPnl={derived.targetPnl}

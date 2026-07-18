@@ -32,12 +32,20 @@ function niceTicks(min: number, max: number, count: number): number[] {
   return ticks;
 }
 
-const compactMoney = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  notation: 'compact',
-  maximumFractionDigits: 1,
-});
+/**
+ * Compact axis label ("$500", "-$1.5K"). Hand-rolled rather than
+ * Intl compact notation, whose output differs between Node (build-time
+ * render) and browsers — a guaranteed hydration mismatch.
+ */
+function axisMoney(value: number): string {
+  const sign = value < 0 ? '-' : '';
+  const abs = Math.abs(value);
+  if (abs >= 1000) {
+    const thousands = abs / 1000;
+    return `${sign}$${Number.isInteger(thousands) ? thousands : thousands.toFixed(1)}K`;
+  }
+  return `${sign}$${Number(abs.toFixed(2))}`;
+}
 
 /**
  * P&L at expiration vs. stock price, as hand-rolled SVG (no chart library).
@@ -131,15 +139,13 @@ export function PayoffChart({
       </div>
       <div
         ref={containerRef}
-        className="h-60 rounded-lg border border-line bg-surface p-0 sm:h-72"
+        className="h-60 overflow-hidden rounded-lg border border-line bg-surface sm:h-72"
       >
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          width={width}
-          height={height}
           role="img"
           aria-label={`Payoff chart: breakeven at ${formatMoney(breakeven)}, strike at ${formatMoney(strike)}, current price ${formatMoney(spotPrice)}.`}
-          className="block"
+          className="block h-full w-full"
         >
           <defs>
             <clipPath id={`${clipId}-profit`}>
@@ -167,7 +173,7 @@ export function PayoffChart({
                 fontSize="11"
                 fill="var(--color-ink-tertiary)"
               >
-                {compactMoney.format(tick)}
+                {axisMoney(tick)}
               </text>
             </g>
           ))}
@@ -182,7 +188,7 @@ export function PayoffChart({
               fontSize="11"
               fill="var(--color-ink-tertiary)"
             >
-              {compactMoney.format(tick)}
+              {axisMoney(tick)}
             </text>
           ))}
 

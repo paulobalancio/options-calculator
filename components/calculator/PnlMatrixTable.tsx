@@ -10,9 +10,11 @@ interface PnlMatrixTableProps {
 }
 
 /**
- * Heatmap color for one cell: profit/loss token mixed toward the surface
- * color, scaled by that cell's share of the matrix's max gain or loss. The
- * whole ramp derives from the two semantic P&L tokens.
+ * Heatmap color for one cell, scaled by the cell's share of the matrix's max
+ * gain or loss. Two segments keep text WCAG-AA readable at every intensity:
+ * light washes of the profit/loss token with ink text, then — past 55% — deep
+ * fills of the strong variant with light text. The whole ramp derives from
+ * the semantic P&L tokens.
  */
 function cellStyle(pnl: number, maxGain: number, maxLoss: number): CSSProperties {
   const intensity =
@@ -24,12 +26,16 @@ function cellStyle(pnl: number, maxGain: number, maxLoss: number): CSSProperties
         ? pnl / maxLoss
         : 0;
   if (intensity < 0.02) return {};
-  const base = pnl >= 0 ? 'var(--color-profit)' : 'var(--color-loss)';
+  if (intensity <= 0.55) {
+    const base = pnl >= 0 ? 'var(--color-profit)' : 'var(--color-loss)';
+    const mix = Math.round(8 + 80 * intensity);
+    return { backgroundColor: `color-mix(in oklab, ${base} ${mix}%, var(--color-surface))` };
+  }
   const strong = pnl >= 0 ? 'var(--color-profit-strong)' : 'var(--color-loss-strong)';
-  const mix = Math.round(6 + 74 * intensity);
+  const mix = Math.round(78 + 22 * ((intensity - 0.55) / 0.45));
   return {
-    backgroundColor: `color-mix(in oklab, ${base} ${mix}%, var(--color-surface))`,
-    color: intensity > 0.55 ? 'var(--color-surface)' : strong,
+    backgroundColor: `color-mix(in oklab, ${strong} ${mix}%, var(--color-surface))`,
+    color: 'var(--color-paper)',
   };
 }
 

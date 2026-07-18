@@ -12,14 +12,16 @@ const GREEK_LABELS = [
 /** Compact per-share Greeks readout under the stat cards. */
 export function GreeksStrip({ greeks }: { greeks: Greeks }) {
   return (
-    <dl className="flex flex-wrap items-baseline gap-x-6 gap-y-1 rounded-md border border-line bg-sunken px-4 py-2.5">
-      {GREEK_LABELS.map(({ key, label, digits }) => (
-        <div key={key} className="flex items-baseline gap-1.5">
-          <dt className="text-xs text-ink-tertiary">{label}</dt>
-          <dd className="numeric text-sm">{greeks[key].toFixed(digits)}</dd>
-        </div>
-      ))}
-      <div className="text-xs text-ink-tertiary">per share</div>
-    </dl>
+    <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 rounded-md border border-line bg-sunken px-4 py-2.5">
+      <dl className="contents">
+        {GREEK_LABELS.map(({ key, label, digits }) => (
+          <div key={key} className="flex items-baseline gap-1.5">
+            <dt className="text-xs text-ink-tertiary">{label}</dt>
+            <dd className="numeric text-sm">{greeks[key].toFixed(digits)}</dd>
+          </div>
+        ))}
+      </dl>
+      <span className="text-xs text-ink-tertiary">per share</span>
+    </div>
   );
 }
