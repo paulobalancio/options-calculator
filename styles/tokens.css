@@ -1,0 +1,97 @@
+/**
+ * Design tokens — the single source of truth for the visual system.
+ *
+ * Every color, size, and duration used in a component must reference a token
+ * defined here. No raw hex values, no default Tailwind palette, no arbitrary
+ * values in class names.
+ *
+ * Direction: a precision financial instrument. Warm paper ground, near-black
+ * ink, one deep blue accent used sparingly. Green and red exist ONLY to encode
+ * profit and loss data — never as decoration.
+ */
+
+@theme {
+  /* Wipe Tailwind's default palette so only tokens below generate utilities. */
+  --color-*: initial;
+
+  /* ---------------------------------------------------------------- color */
+
+  /* Ink — near-black with a cool cast. All neutrals are ink mixed toward
+     paper, so the grays share one temperature instead of being generic. */
+  --color-ink: #191a1e;
+  --color-ink-secondary: #50525a; /* secondary text, axis labels */
+  --color-ink-tertiary: #82848d; /* placeholders, captions, units */
+
+  /* Paper — warm off-white ground; surface is for raised cards/inputs. */
+  --color-paper: #faf9f6;
+  --color-surface: #ffffff;
+  --color-sunken: #f1efeb; /* wells: table headers, disclosure panels */
+
+  /* Borders — derived from ink over paper. */
+  --color-line: #e3e1db; /* hairlines, dividers */
+  --color-line-strong: #c9c7c0; /* input borders, table frame */
+
+  /* Accent — one deep, serious blue. Primary actions, links, focus rings,
+     selected states. Used sparingly; never for data. */
+  --color-accent: #264fb1;
+  --color-accent-hover: #1e4093;
+  --color-accent-wash: #eef1f9; /* selected-tab / hover wash */
+
+  /* P&L semantics — reserved EXCLUSIVELY for profit and loss data:
+     matrix cells, chart fills, signed numbers. Never decorative. */
+  --color-profit: #0e7a46;
+  --color-profit-strong: #085c33; /* text on light profit washes */
+  --color-loss: #c03434;
+  --color-loss-strong: #99271f;
+
+  /* Error state for form validation (distinct from P&L loss red). */
+  --color-danger: #b42318;
+  --color-danger-wash: #fbeeec;
+
+  /* ----------------------------------------------------------- typography */
+
+  /* UI face: Instrument Sans (grotesque, loaded via next/font).
+     Numeric face: JetBrains Mono — ALL numbers render in this with
+     tabular figures so values never jitter in width as they update. */
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui,
+    sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, 'SF Mono', monospace;
+
+  /* Modular scale — six sizes, nothing else. */
+  --text-xs: 0.75rem; /* 12px — matrix cells, captions, units */
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.8125rem; /* 13px — labels, table headers, buttons */
+  --text-sm--line-height: 1.25rem;
+  --text-base: 0.9375rem; /* 15px — body copy, inputs */
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.1875rem; /* 19px — section headings, stat values */
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.5rem; /* 24px — page h1 */
+  --text-xl--line-height: 2rem;
+  --text-2xl: 2rem; /* 32px — homepage display */
+  --text-2xl--line-height: 2.5rem;
+
+  /* -------------------------------------------------------------- spacing */
+
+  /* 4px base grid. Tailwind v4 derives its numeric spacing utilities from
+     this, so p-1 = 4px, p-2 = 8px, … Use only whole steps in components. */
+  --spacing: 0.25rem;
+
+  /* --------------------------------------------------------------- radius */
+
+  --radius-sm: 0.25rem; /* inputs, matrix cells */
+  --radius-md: 0.375rem; /* cards, buttons */
+  --radius-lg: 0.5rem; /* page-level panels */
+
+  /* ---------------------------------------------------------------- depth */
+
+  /* Depth comes from borders and background shifts. This is the ONLY
+     shadow token — used for popovers/sticky column edge, nothing else. */
+  --shadow-raised: 0 1px 2px rgb(25 26 30 / 0.06), 0 2px 8px rgb(25 26 30 / 0.04);
+
+  /* --------------------------------------------------------------- motion */
+
+  /* Interactive-state transitions only. No scroll or entrance animation. */
+  --duration-fast: 150ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0.2, 1);
+}
