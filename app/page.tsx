@@ -1,103 +1,138 @@
-import Image from "next/image";
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { SITE_NAME, SITE_URL } from '@/lib/site';
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: { absolute: `Options Profit Calculator — Free P&L Charts for Calls & Puts · ${SITE_NAME}` },
+  description:
+    'Model option trades before you place them. Free calculators for long calls and long puts with a live profit/loss matrix, payoff chart, breakeven, and Greeks.',
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: `Options Profit Calculator · ${SITE_NAME}`,
+    description:
+      'Free calculators for long calls and long puts with a live P&L matrix and payoff chart.',
+    url: '/',
+  },
+};
+
+interface StrategyCard {
+  href: string;
+  name: string;
+  outlook: string;
+  description: string;
+  /** Payoff-shape glyph path in a 64×36 viewBox. */
+  glyphPath: string;
+}
+
+const STRATEGIES: StrategyCard[] = [
+  {
+    href: '/calculator/long-call',
+    name: 'Long Call',
+    outlook: 'Bullish',
+    description:
+      'Buy a call to profit from a rising stock. Risk is capped at the premium; upside is unlimited.',
+    glyphPath: 'M4 24h28l28 -16',
+  },
+  {
+    href: '/calculator/long-put',
+    name: 'Long Put',
+    outlook: 'Bearish',
+    description:
+      'Buy a put to profit from a falling stock, or to hedge shares you own. Risk is capped at the premium.',
+    glyphPath: 'M4 8l28 16h28',
+  },
+];
+
+export default function HomePage() {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: SITE_NAME,
+    url: SITE_URL,
+    applicationCategory: 'FinanceApplication',
+    operatingSystem: 'Web',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    description:
+      'Free options profit calculator with a live P&L matrix, payoff chart, and Greeks for long calls and long puts.',
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="space-y-12">
+      <header className="max-w-2xl pt-4">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Options profit calculator
+        </h1>
+        <p className="mt-3 text-ink-secondary">
+          See what an option trade could make — or lose — before you place it. Pick a
+          strategy, enter the trade, and get a live profit/loss matrix across every
+          price and date until expiration, a payoff chart, breakeven, and Greeks. Free,
+          fast, and nothing to sign up for.
+        </p>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <section aria-labelledby="pick-strategy">
+        <h2 id="pick-strategy" className="text-lg font-semibold tracking-tight">
+          Pick a strategy
+        </h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {STRATEGIES.map((strategy) => (
+            <Link
+              key={strategy.href}
+              href={strategy.href}
+              className="group rounded-lg border border-line bg-surface p-5 transition-colors duration-fast hover:border-accent"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-baseline gap-2">
+                    <h3 className="font-semibold tracking-tight group-hover:text-accent">
+                      {strategy.name}
+                    </h3>
+                    <span className="text-xs uppercase tracking-wide text-ink-tertiary">
+                      {strategy.outlook}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm text-ink-secondary">{strategy.description}</p>
+                </div>
+                <svg
+                  viewBox="0 0 64 36"
+                  className="mt-1 h-9 w-16 shrink-0"
+                  aria-hidden="true"
+                  fill="none"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M4 24h56" stroke="var(--color-line-strong)" strokeWidth="1" />
+                  <path d={strategy.glyphPath} stroke="var(--color-accent)" />
+                </svg>
+              </div>
+            </Link>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <p className="mt-4 text-sm text-ink-tertiary">
+          Spreads, covered calls, and multi-leg strategies are on the way.
+        </p>
+      </section>
+
+      <section aria-labelledby="why" className="max-w-2xl">
+        <h2 id="why" className="text-lg font-semibold tracking-tight">
+          Why model a trade first?
+        </h2>
+        <p className="mt-3 text-ink-secondary">
+          An option’s outcome depends on more than direction: strike selection, premium
+          paid, time decay, and implied volatility all shape what you actually take
+          home. The matrix view shows your estimated P&amp;L at every combination of
+          stock price and date — so you can see not just whether a trade can win, but
+          how much room it has to be wrong, and how fast time works against it. All math
+          runs in your browser using the Black-Scholes model; nothing you enter is
+          stored or sent anywhere.
+        </p>
+      </section>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     </div>
   );
 }
